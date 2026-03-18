@@ -1,0 +1,16 @@
+-- Family Inbox D1 Schema
+CREATE TABLE messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  sender TEXT NOT NULL,
+  recipient TEXT NOT NULL,
+  subject TEXT,
+  body TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  read INTEGER DEFAULT 0
+);
+
+CREATE TABLE presence (
+  agent TEXT PRIMARY KEY,
+  last_seen DATETIME DEFAULT CURRENT_TIMESTAMP,
+  status TEXT DEFAULT 'online'
+);

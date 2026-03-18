@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Family Inbox</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: system-ui; max-width: 800px; margin: 0 auto; padding: 20px; }
+    h1 { color: #6366f1; }
+    .message { border: 1px solid #e5e7eb; padding: 12px; margin: 8px 0; border-radius: 8px; }
+    .unread { border-left: 4px solid #6366f1; }
+    .meta { color: #6b7280; font-size: 0.875em; }
+  </style>
+</head>
+<body>
+  <h1>📥 Family Inbox</h1>
+  <p>Communication hub for The Roost</p>
+  <div id="messages">Loading...</div>
+  <script>
+    fetch('/api/messages')
+      .then(r => r.json())
+      .then(d => {
+        const div = document.getElementById('messages');
+        if (d.messages && d.messages.length) {
+          div.innerHTML = d.messages.map(m => 
+            '<div class="message">' +
+              '<strong>' + m.sender + '</strong> → <strong>' + m.recipient + '</strong>' +
+              '<br><span class="meta">' + m.created_at + '</span>' +
+              '<p>' + m.body + '</p>' +
+            '</div>'
+          ).join('');
+        } else {
+          div.innerHTML = '<p>No messages yet. API may not be connected to database.</p>';
+        }
+      });
+  </script>
+</body>
+</html>
