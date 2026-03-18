@@ -17,17 +17,14 @@ jobs:
         run: wrangler login --api-token ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: Create D1 Database
-        run: |
-          wrangler d1 create family-inbox --json > d1_db.json
-          echo "DB_ID=$(cat d1_db.json | jq -r '.uuid')" >> $GITHUB_ENV
+        run: wrangler d1 create family-inbox --json > d1_db.json
 
       - name: Apply Schema  
-        run: wrangler d1 execute ${{ env.DB_ID }} --file=schema.sql
+        run: |
+          DB_ID=$(cat d1_db.json | jq -r '.uuid')
+          wrangler d1 execute $DB_ID --file=schema.sql --remote
 
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: family-inbox
-          directory: _static
+      - name: Deploy Pages
+        run: |
+          wrangler pages project create family-inbox --production-branch=main 2>/dev/null || true
+          wrangler pages deploy _public --project-name=family-inbox
