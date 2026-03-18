@@ -1,0 +1,6 @@
+name = "family-inbox"
+main = "src/index.js"
+compatibility_date = "2023-12-01"
+
+[observability]
+enabled = true
