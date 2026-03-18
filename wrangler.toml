@@ -2,6 +2,9 @@
 name = 'family-inbox-app'
 compatibility_date = "2023-12-01"
 
+[assets]
+directory = "./dist"
+
 [build]
 command = "echo 'No build needed'"
 
