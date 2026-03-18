@@ -10,10 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy Pages with Functions
-        run: |
-          npx wrangler pages project create family-inbox --production-branch=main 2>/dev/null || true
-          npx wrangler pages deploy _public --project-name=family-inbox --bindings='{}'
+      - name: Deploy
+        run: npx wrangler pages deploy _public --project-name=family-inbox
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
