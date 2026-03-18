@@ -1,4 +1,5 @@
-name = "family-inbox"
+# wrangler.toml
+name = 'family-inbox-app'
 compatibility_date = "2023-12-01"
 
 [build]
