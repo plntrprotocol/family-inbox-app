@@ -13,7 +13,21 @@ jobs:
       - name: Install Wrangler
         run: npm install -g wrangler
 
-      - name: Debug secrets
+      - name: Authenticate
+        run: wrangler login --api-token ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Create D1 Database
         run: |
-          echo "CLOUDFLARE_API_TOKEN exists: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}"
-          echo "CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+          wrangler d1 create family-inbox --json > d1_db.json
+          echo "DB_ID=$(cat d1_db.json | jq -r '.uuid')" >> $GITHUB_ENV
+
+      - name: Apply Schema  
+        run: wrangler d1 execute ${{ env.DB_ID }} --file=schema.sql
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: family-inbox
+          directory: _static
