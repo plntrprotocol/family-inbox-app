@@ -1,13 +1,2 @@
-# wrangler.toml
-name = 'family-inbox-app'
+name = "family-inbox"
 compatibility_date = "2023-12-01"
-
-[assets]
-directory = "./dist"
-
-[build]
-command = "echo 'No build needed'"
-
-[site]
-bucket = "./_public"
-strict_names = true
