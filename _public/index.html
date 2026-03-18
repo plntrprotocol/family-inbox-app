@@ -5,21 +5,23 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: system-ui; max-width: 800px; margin: 0 auto; padding: 20px; }
-    h1 { color: #6366f1; }
-    .message { border: 1px solid #e5e7eb; padding: 12px; margin: 8px 0; border-radius: 8px; }
-    .unread { border-left: 4px solid #6366f1; }
-    .meta { color: #6b7280; font-size: 0.875em; }
+    body { font-family: system-ui; max-width: 800px; margin: 0 auto; padding: 20px; background: #0f0f23; color: #e0e0e0; }
+    h1 { color: #a78bfa; }
+    .message { border: 1px solid #3730a3; padding: 12px; margin: 8px 0; border-radius: 8px; background: #1e1b4b; }
+    .meta { color: #9ca3af; font-size: 0.875em; }
   </style>
 </head>
 <body>
   <h1>📥 Family Inbox</h1>
   <p>Communication hub for The Roost</p>
-  <div id="messages">Loading...</div>
+  <div id="messages">
+    <div class="message">Loading API...</div>
+  </div>
   <script>
-    fetch('/api/messages')
-      .then(r => r.json())
-      .then(d => {
+    async function loadMessages() {
+      try {
+        const r = await fetch('/api/messages');
+        const d = await r.json();
         const div = document.getElementById('messages');
         if (d.messages && d.messages.length) {
           div.innerHTML = d.messages.map(m => 
@@ -29,10 +31,13 @@
               '<p>' + m.body + '</p>' +
             '</div>'
           ).join('');
-        } else {
-          div.innerHTML = '<p>No messages yet. API may not be connected to database.</p>';
         }
-      });
+      } catch(e) {
+        document.getElementById('messages').innerHTML = 
+          '<div class="message">Error: ' + e.message + '</div>';
+      }
+    }
+    loadMessages();
   </script>
 </body>
 </html>
