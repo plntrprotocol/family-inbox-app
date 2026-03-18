@@ -8,10 +8,6 @@ directory = "./dist"
 [build]
 command = "echo 'No build needed'"
 
-[[pages]]
-binding = "DB"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "family-inbox"
-database_id = "REPLACE_WITH_YOUR_DB_ID"
+[site]
+bucket = "./_public"
+strict_names = true
