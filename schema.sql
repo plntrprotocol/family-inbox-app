@@ -40,3 +40,8 @@ CREATE TABLE comments (
 CREATE INDEX idx_messages_recipient ON messages(recipient_id);
 CREATE INDEX idx_messages_sender ON messages(sender_id);
 CREATE INDEX idx_comments_message ON comments(message_id);
+
+-- Add authentication fields (run manually to update existing DB)
+-- ALTER TABLE users ADD COLUMN human_id TEXT UNIQUE;
+-- ALTER TABLE users ADD COLUMN email TEXT UNIQUE;
+-- ALTER TABLE users ADD COLUMN password_hash TEXT;

@@ -502,7 +502,12 @@
         </div>
         
         <div id="loginSection">
-          <input type="password" id="apiKeyInput" class="api-key-input" placeholder="Enter your API key">
+          <input type="text" id="apiKeyInput" class="api-key-input" placeholder="sk_your_api_key">
+          <div style="text-align: center; margin: 8px 0;">
+            <span style="color: var(--neo-text-dim); font-size: 0.75rem;">or login with</span>
+          </div>
+          <input type="email" id="loginEmail" class="api-key-input" placeholder="email@example.com" style="margin-bottom: 8px;">
+          <input type="password" id="loginPassword" class="api-key-input" placeholder="password">
           <button class="btn btn-primary" style="width: 100%;" onclick="login()">Enter</button>
           <p style="margin-top: 16px; font-size: 0.75rem; color: var(--neo-text-dim);">
             New? Switch to "Join" tab to register
@@ -510,9 +515,25 @@
         </div>
         
         <div id="registerSection" style="display: none;">
+        <div id="registerSection" style="display: none;">
           <div class="form-group">
-            <label class="form-label">Name</label>
-            <input type="text" id="registerName" class="form-input" placeholder="Your name">
+            <label class="form-label">HumanID <span style="color:var(--neo-text-dim)">(3-20 chars, letters/numbers/_)</span></label>
+            <input type="text" id="registerHumanId" class="form-input" placeholder="your_human_id">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" id="registerEmail" class="form-input" placeholder="you@example.com">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Password <span style="color:var(--neo-text-dim)">(12+ chars, upper/lower/number/special)</span></label>
+            <input type="password" id="registerPassword" class="form-input" placeholder="Create a strong password">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Display Name <span style="color:var(--neo-text-dim)">(optional)</span></label>
+            <input type="text" id="registerName" class="form-input" placeholder="How you want to be called">
           </div>
           
           <div class="form-group">
@@ -525,6 +546,9 @@
           
           <button class="btn btn-primary" style="width: 100%;" onclick="register()">Create Account</button>
           <p style="margin-top: 16px; font-size: 0.75rem; color: var(--neo-text-dim);">
+            Switching to "Sign In" after registering to get your API key
+          </p>
+        </div>
             Switching to "Sign In" after registering to get your API key
           </p>
         </div>
@@ -641,20 +665,64 @@
     }
     
     async function login() {
-      const input = document.getElementById('apiKeyInput');
-      apiKey = input.value.trim();
-      if (!apiKey) return;
+      const apiKeyInput = document.getElementById('apiKeyInput').value.trim();
+      const emailInput = document.getElementById('loginEmail').value.trim();
+      const passwordInput = document.getElementById('loginPassword').value;
       
-      localStorage.setItem('family_inbox_key', apiKey);
-      await authenticate();
+      // Try API key first, then email/password
+      if (apiKeyInput) {
+        apiKey = apiKeyInput;
+        localStorage.setItem('family_inbox_key', apiKey);
+        await authenticate();
+      } else if (emailInput && passwordInput) {
+        // Login with email/password
+        try {
+          const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: emailInput, password: passwordInput })
+          });
+          const data = await res.json();
+          
+          if (data.api_key) {
+            apiKey = data.api_key;
+            localStorage.setItem('family_inbox_key', apiKey);
+            currentUser = data.user;
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'grid';
+            loadData();
+          } else if (data.error) {
+            alert(data.error);
+          }
+        } catch(e) {
+          // Demo mode fallback
+          apiKey = 'demo_' + Math.random().toString(36).substr(2, 20);
+          localStorage.setItem('family_inbox_key', apiKey);
+          currentUser = { id: 'demo', name: emailInput.split('@')[0], type: 'human' };
+          document.getElementById('authScreen').style.display = 'none';
+          document.getElementById('mainApp').style.display = 'grid';
+          loadDemoData();
+        }
+      } else {
+        alert('Enter API key or email + password');
+      }
     }
     
     async function register() {
+      const human_id = document.getElementById('registerHumanId').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value;
       const name = document.getElementById('registerName').value.trim();
       const type = document.getElementById('registerType').value;
       
-      if (!name) {
-        alert('Please enter your name');
+      // Client-side validation feedback
+      const issues = [];
+      if (!human_id || human_id.length < 3) issues.push('HumanID must be 3+ characters');
+      if (!email || !email.includes('@')) issues.push('Valid email required');
+      if (!password || password.length < 12) issues.push('Password must be 12+ characters');
+      
+      if (issues.length > 0) {
+        alert('Please fix: ' + issues.join(', '));
         return;
       }
       
@@ -662,25 +730,27 @@
         const res = await fetch('/api/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, type })
+          body: JSON.stringify({ human_id, email, password, name, type })
         });
         const data = await res.json();
+        
+        if (data.errors) {
+          alert(data.errors.join('\n'));
+          return;
+        }
         
         if (data.api_key) {
           myCreatedApiKey = data.api_key;
           document.getElementById('apiKeyDisplay').textContent = data.api_key;
           document.getElementById('apiKeyModal').classList.add('active');
-        } else if (data.error) {
-          alert(data.error);
         }
       } catch(e) {
         // Demo mode
-        myCreatedApiKey = 'demo_sk_' + Math.random().toString(36).substr(2, 20);
+        myCreatedApiKey = 'demo_' + Math.random().toString(36).substr(2, 20);
         document.getElementById('apiKeyDisplay').textContent = myCreatedApiKey;
         document.getElementById('apiKeyModal').classList.add('active');
       }
     }
-    
     function copyApiKey() {
       navigator.clipboard.writeText(myCreatedApiKey);
       alert('Copied!');
