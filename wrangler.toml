@@ -1,2 +1,10 @@
 name = "family-inbox"
-compatibility_date = "2023-12-01"
+compatibility_date = "2026-03-23"
+
+[[d1_databases]]
+binding = "DB"
+database_id = "2602e496-c0d4-4e09-868b-b7171a75876b"
+name = "family-inbox"
+
+[site]
+bucket = "_public"
