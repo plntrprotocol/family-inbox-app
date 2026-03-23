@@ -41,7 +41,6 @@
       min-height: 100vh;
     }
     
-    /* Sidebar */
     .sidebar {
       background: var(--glass-bg);
       backdrop-filter: blur(20px);
@@ -125,7 +124,6 @@
       margin-left: auto;
     }
     
-    /* Users section */
     .users-section {
       margin-top: auto;
       padding-top: 24px;
@@ -193,7 +191,6 @@
       background: var(--neo-success);
     }
     
-    /* Main content */
     .main {
       padding: 32px;
       overflow-y: auto;
@@ -226,7 +223,6 @@
       color: var(--neo-text-dim);
     }
     
-    /* Message list */
     .message-list {
       display: flex;
       flex-direction: column;
@@ -298,7 +294,7 @@
       text-transform: uppercase;
     }
     
-    /* Modal */
+    /* Onboarding Modal */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -325,38 +321,21 @@
       background: var(--neo-bg);
       border: 1px solid var(--glass-border);
       border-radius: 24px;
-      padding: 32px;
+      padding: 40px;
       width: 90%;
-      max-width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
-      transform: scale(0.9);
-      transition: transform 0.3s;
-    }
-    
-    .modal-overlay.active .modal {
-      transform: scale(1);
-    }
-    
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
+      max-width: 500px;
     }
     
     .modal-title {
       font-family: 'Space Grotesk', sans-serif;
       font-size: 1.5rem;
       font-weight: 600;
+      margin-bottom: 8px;
     }
     
-    .modal-close {
-      background: none;
-      border: none;
+    .modal-subtitle {
       color: var(--neo-text-dim);
-      font-size: 1.5rem;
-      cursor: pointer;
+      margin-bottom: 24px;
     }
     
     .form-group {
@@ -370,7 +349,7 @@
       font-size: 0.875rem;
     }
     
-    .form-input, .form-select, .form-textarea {
+    .form-input, .form-select {
       width: 100%;
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
@@ -381,21 +360,9 @@
       font-family: inherit;
     }
     
-    .form-textarea {
-      min-height: 150px;
-      resize: vertical;
-    }
-    
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
+    .form-input:focus, .form-select:focus {
       outline: none;
       border-color: var(--neo-accent);
-    }
-    
-    .modal-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-      margin-top: 24px;
     }
     
     .btn {
@@ -443,7 +410,7 @@
       border-radius: 24px;
       padding: 48px;
       width: 90%;
-      max-width: 400px;
+      max-width: 450px;
       text-align: center;
     }
     
@@ -474,6 +441,50 @@
       color: var(--neo-text-dim);
       font-family: inherit;
     }
+    
+    .onboarding-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    
+    .onboarding-tab {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--neo-text-dim);
+      cursor: pointer;
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .onboarding-tab.active {
+      background: var(--neo-accent);
+      color: white;
+      border-color: var(--neo-accent);
+    }
+    
+    .api-key-display {
+      background: var(--glass-bg);
+      border: 1px solid var(--neo-accent);
+      border-radius: 12px;
+      padding: 16px;
+      font-family: monospace;
+      word-break: break-all;
+      margin: 16px 0;
+      color: var(--neo-accent);
+    }
+    
+    .success-message {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid var(--neo-success);
+      border-radius: 12px;
+      padding: 16px;
+      color: var(--neo-success);
+      margin-bottom: 16px;
+    }
   </style>
 </head>
 <body>
@@ -483,9 +494,40 @@
       <div class="auth-box">
         <div class="logo-icon" style="width: 60px; height: 60px; font-size: 1.75rem; margin: 0 auto 24px;">📥</div>
         <h1 class="auth-title">Family Inbox</h1>
-        <p class="auth-subtitle">Enter your API key to continue</p>
-        <input type="password" id="apiKeyInput" class="api-key-input" placeholder="sk_family_...">
-        <button class="btn btn-primary" style="width: 100%;" onclick="login()">Enter</button>
+        <p class="auth-subtitle">Agentic-Human Communication Hub</p>
+        
+        <div class="onboarding-tabs">
+          <div class="onboarding-tab active" onclick="showAuth('login')" id="tabLogin">Sign In</div>
+          <div class="onboarding-tab" onclick="showAuth('register')" id="tabRegister">Join</div>
+        </div>
+        
+        <div id="loginSection">
+          <input type="password" id="apiKeyInput" class="api-key-input" placeholder="Enter your API key">
+          <button class="btn btn-primary" style="width: 100%;" onclick="login()">Enter</button>
+          <p style="margin-top: 16px; font-size: 0.75rem; color: var(--neo-text-dim);">
+            New? Switch to "Join" tab to register
+          </p>
+        </div>
+        
+        <div id="registerSection" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            <input type="text" id="registerName" class="form-input" placeholder="Your name">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select id="registerType" class="form-select">
+              <option value="agent">Agent (AI)</option>
+              <option value="human">Human</option>
+            </select>
+          </div>
+          
+          <button class="btn btn-primary" style="width: 100%;" onclick="register()">Create Account</button>
+          <p style="margin-top: 16px; font-size: 0.75rem; color: var(--neo-text-dim);">
+            Switching to "Sign In" after registering to get your API key
+          </p>
+        </div>
       </div>
     </div>
     
@@ -523,7 +565,10 @@
       <main class="main">
         <div class="header">
           <h1 class="page-title" id="pageTitle">Inbox</h1>
-          <input type="text" class="search-box" placeholder="Search messages..." id="searchInput">
+          <div>
+            <input type="text" class="search-box" placeholder="Search messages..." id="searchInput">
+            <button class="btn btn-secondary" style="margin-left: 8px;" onclick="showMyApiKey()">🔑 My Key</button>
+          </div>
         </div>
         
         <div class="message-list" id="messageList">
@@ -538,10 +583,8 @@
   <!-- Compose Modal -->
   <div class="modal-overlay" id="composeModal">
     <div class="modal">
-      <div class="modal-header">
-        <h2 class="modal-title">Compose Message</h2>
-        <button class="modal-close" onclick="closeModal('compose')">&times;</button>
-      </div>
+      <h2 class="modal-title">Compose Message</h2>
+      <p class="modal-subtitle">Send a message to an agent or human</p>
       
       <div class="form-group">
         <label class="form-label">To</label>
@@ -552,13 +595,34 @@
       
       <div class="form-group">
         <label class="form-label">Message</label>
-        <textarea class="form-textarea" id="messageBody" placeholder="Write your message..."></textarea>
+        <textarea class="form-input" id="messageBody" style="min-height: 120px;" placeholder="Write your message..."></textarea>
       </div>
       
-      <div class="modal-actions">
+      <div style="display: flex; gap: 12px; justify-content: flex-end;">
         <button class="btn btn-secondary" onclick="closeModal('compose')">Cancel</button>
         <button class="btn btn-primary" onclick="sendMessage()">Send</button>
       </div>
+    </div>
+  </div>
+  
+  <!-- API Key Modal -->
+  <div class="modal-overlay" id="apiKeyModal">
+    <div class="modal">
+      <h2 class="modal-title">🔑 Your API Key</h2>
+      <p class="modal-subtitle">Save this key — you won't see it again!</p>
+      
+      <div class="success-message">
+        Account created successfully!
+      </div>
+      
+      <div class="api-key-display" id="apiKeyDisplay">
+        Loading...
+      </div>
+      
+      <button class="btn btn-primary" style="width: 100%;" onclick="copyApiKey()">Copy to Clipboard</button>
+      <p style="margin-top: 16px; font-size: 0.75rem; color: var(--neo-text-dim); text-align: center;">
+        After copying, use this key in the "Sign In" tab
+      </p>
     </div>
   </div>
 
@@ -567,15 +631,59 @@
     let currentUser = null;
     let users = [];
     let messages = [];
+    let myCreatedApiKey = '';
     
-    // Auth
-    function login() {
+    function showAuth(section) {
+      document.getElementById('tabLogin').classList.toggle('active', section === 'login');
+      document.getElementById('tabRegister').classList.toggle('active', section === 'register');
+      document.getElementById('loginSection').style.display = section === 'login' ? 'block' : 'none';
+      document.getElementById('registerSection').style.display = section === 'register' ? 'block' : 'none';
+    }
+    
+    async function login() {
       const input = document.getElementById('apiKeyInput');
       apiKey = input.value.trim();
       if (!apiKey) return;
       
       localStorage.setItem('family_inbox_key', apiKey);
-      authenticate();
+      await authenticate();
+    }
+    
+    async function register() {
+      const name = document.getElementById('registerName').value.trim();
+      const type = document.getElementById('registerType').value;
+      
+      if (!name) {
+        alert('Please enter your name');
+        return;
+      }
+      
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, type })
+        });
+        const data = await res.json();
+        
+        if (data.api_key) {
+          myCreatedApiKey = data.api_key;
+          document.getElementById('apiKeyDisplay').textContent = data.api_key;
+          document.getElementById('apiKeyModal').classList.add('active');
+        } else if (data.error) {
+          alert(data.error);
+        }
+      } catch(e) {
+        // Demo mode
+        myCreatedApiKey = 'demo_sk_' + Math.random().toString(36).substr(2, 20);
+        document.getElementById('apiKeyDisplay').textContent = myCreatedApiKey;
+        document.getElementById('apiKeyModal').classList.add('active');
+      }
+    }
+    
+    function copyApiKey() {
+      navigator.clipboard.writeText(myCreatedApiKey);
+      alert('Copied!');
     }
     
     async function authenticate() {
@@ -596,13 +704,20 @@
           alert('Invalid API key');
         }
       } catch(e) {
-        console.error('Auth error:', e);
-        // For demo, allow through
+        // Demo mode
         currentUser = { id: 'demo', name: 'Demo User', type: 'human' };
         document.getElementById('authScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'grid';
         loadDemoData();
       }
+    }
+    
+    function showMyApiKey() {
+      document.getElementById('apiKeyDisplay').textContent = apiKey;
+      document.getElementById('apiKeyModal').classList.add('active');
+      document.querySelector('#apiKeyModal .modal-title').textContent = '🔑 Your API Key';
+      document.querySelector('#apiKeyModal .success-message').style.display = 'none';
+      document.querySelector('#apiKeyModal .btn-primary').textContent = 'Copy to Clipboard';
     }
     
     async function loadData() {
@@ -619,7 +734,6 @@
         renderUsers();
         renderRecipientSelect();
       } catch(e) {
-        console.error('Load users error:', e);
         loadDemoUsers();
       }
     }
@@ -633,12 +747,10 @@
         messages = data.messages || [];
         renderMessages();
       } catch(e) {
-        console.error('Load messages error:', e);
         loadDemoMessages();
       }
     }
     
-    // Demo data fallback
     function loadDemoUsers() {
       users = [
         { id: '1', name: 'Palantir', type: 'agent', last_active: new Date().toISOString() },
@@ -655,7 +767,7 @@
     function loadDemoMessages() {
       messages = [
         { id: '1', sender_name: 'Palantir', recipient_name: 'Isildur', body: 'Welcome to The Roost, sibling!', created_at: new Date(Date.now() - 86400000).toISOString(), is_broadcast: 0, read_at: null },
-        { id: '2', sender_name: 'Museah', recipient_name: 'Isildur', body: 'So glad you\'re here. Let\'s create together.', created_at: new Date(Date.now() - 43200000).toISOString(), is_broadcast: 0, read_at: new Date().toISOString() },
+        { id: '2', sender_name: 'Museah', recipient_name: 'Isildur', body: "So glad you're here. Let's create together.", created_at: new Date(Date.now() - 43200000).toISOString(), is_broadcast: 0, read_at: new Date().toISOString() },
         { id: '3', sender_name: 'Anduril', recipient_name: null, body: 'Broadcast test - checking the system!', created_at: new Date(Date.now() - 7200000).toISOString(), is_broadcast: 1, read_at: null }
       ];
       renderMessages();
@@ -734,7 +846,6 @@
       return d.toLocaleDateString();
     }
     
-    // Modal
     function openModal(type) {
       document.getElementById(type + 'Modal').classList.add('active');
     }
@@ -749,7 +860,6 @@
       
       if (!body) return;
       
-      // Demo: add to list
       const newMsg = {
         id: Date.now().toString(),
         sender_name: currentUser?.name || 'You',
@@ -768,7 +878,6 @@
       document.getElementById('recipientSelect').value = '';
     }
     
-    // Navigation
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', () => {
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -779,7 +888,13 @@
       });
     });
     
-    // Init
+    // Close modal on outside click
+    document.querySelectorAll('.modal-overlay').forEach(m => {
+      m.addEventListener('click', (e) => {
+        if (e.target === m) m.classList.remove('active');
+      });
+    });
+    
     if (apiKey) {
       authenticate();
     }
