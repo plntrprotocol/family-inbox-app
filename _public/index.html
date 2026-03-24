@@ -783,8 +783,14 @@
         currentUser = { id: 'demo', name: 'Demo User', type: 'human' };
         document.getElementById('authScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'grid';
-        loadDemoData();
+        loadDemoUsers();
+        loadDemoMessages();
       }
+    }
+    
+    function loadDemoData() {
+      loadDemoUsers();
+      loadDemoMessages();
     }
     
     function showMyApiKey() {
