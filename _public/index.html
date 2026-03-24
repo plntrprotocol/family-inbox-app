@@ -704,7 +704,8 @@
           currentUser = { id: 'demo', name: emailInput.split('@')[0], type: 'human' };
           document.getElementById('authScreen').style.display = 'none';
           document.getElementById('mainApp').style.display = 'grid';
-          loadDemoData();
+          loadDemoUsers();
+        loadDemoMessages();
         }
       } else {
         alert('Enter API key or email + password');
@@ -776,7 +777,9 @@
           document.getElementById('mainApp').style.display = 'grid';
           loadData();
         } else {
-          alert('Invalid API key');
+          // Clear invalid key and stay on auth screen
+          document.getElementById('apiKeyInput').value = '';
+          localStorage.removeItem('family_inbox_key');
         }
       } catch(e) {
         // Demo mode
