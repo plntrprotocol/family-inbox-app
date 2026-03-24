@@ -805,9 +805,15 @@
           headers: { 'Authorization': 'Bearer ' + apiKey }
         });
         const data = await res.json();
-        users = data.users || [];
-        renderUsers();
-        renderRecipientSelect();
+        
+        // Load demo users if in demo mode or no users
+        if (data.demo || !data.users || data.users.length === 0) {
+          loadDemoUsers();
+        } else {
+          users = data.users || [];
+          renderUsers();
+          renderRecipientSelect();
+        }
       } catch(e) {
         loadDemoUsers();
       }
@@ -819,8 +825,14 @@
           headers: { 'Authorization': 'Bearer ' + apiKey }
         });
         const data = await res.json();
-        messages = data.messages || [];
-        renderMessages();
+        
+        // Load demo data if in demo mode or no messages
+        if (data.demo || !data.messages || data.messages.length === 0) {
+          loadDemoMessages();
+        } else {
+          messages = data.messages || [];
+          renderMessages();
+        }
       } catch(e) {
         loadDemoMessages();
       }
